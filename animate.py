@@ -3,89 +3,146 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import pickle
 
-# Load the pickle file
+# Load the pickle files
 with open('double_pendulum_data.pickle', 'rb') as f:
-    data = pickle.load(f)
+    data1 = pickle.load(f)
 
-# Extract the angles, angular velocities, and energies from the data
-angles1 = data['angle1']
-angles2 = data['angle2']
-angular_velocity1 = data['angular_velocity1']
-angular_velocity2 = data['angular_velocity2']
-kinetic_energies = data['kinetic_energy']
-potential_energies = data['potential_energy']
-mechanical_energies = data['mechanical_energy']
-L1 = 1.0
-L2 = 1.0
+with open('double_pendulum_data1.pickle', 'rb') as f:
+    data2 = pickle.load(f)
+
+# Extract the data for the first double pendulum
+angles1_1 = data1['angle1']
+angles2_1 = data1['angle2']
+angular_velocity1_1 = data1['angular_velocity1']
+angular_velocity2_1 = data1['angular_velocity2']
+time1 = data1['t']
+kinetic_energy1 = data1['kinetic_energy']
+potential_energy1 = data1['potential_energy']
+mechanical_energy1 = data1['mechanical_energy']
+
+# Extract the data for the second double pendulum
+angles1_2 = data2['angle1']
+angles2_2 = data2['angle2']
+angular_velocity1_2 = data2['angular_velocity1']
+angular_velocity2_2 = data2['angular_velocity2']
+time2 = data2['t']
+kinetic_energy2 = data2['kinetic_energy']
+potential_energy2 = data2['potential_energy']
+mechanical_energy2 = data2['mechanical_energy']
 
 # Calculate the positions of the pendulums
-x1 = L1 * np.sin(angles1)
-y1 = -L1 * np.cos(angles1)
-x2 = x1 + L2 * np.sin(angles2)
-y2 = y1 - L2 * np.cos(angles2)
+L1 = 1.0
+L2 = 1.0
+x1_1 = L1 * np.sin(angles1_1)
+y1_1 = -L1 * np.cos(angles1_1)
+x2_1 = x1_1 + L2 * np.sin(angles2_1)
+y2_1 = y1_1 - L2 * np.cos(angles2_1)
 
-# Set up the figure and axis
-fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(10, 10))
+x1_2 = L1 * np.sin(angles1_2)
+y1_2 = -L1 * np.cos(angles1_2)
+x2_2 = x1_2 + L2 * np.sin(angles2_2)
+y2_2 = y1_2 - L2 * np.cos(angles2_2)
 
-# Set up the animation plot
+# Set up the figure and axes
+fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(12, 10))
+
+# Set up the double pendulum plot
 ax1.set_xlim(-L1 - L2 - 0.5, L1 + L2 + 0.5)
 ax1.set_ylim(-L1 - L2 - 0.5, L1 + L2 + 0.5)
-line, = ax1.plot([], [], 'o-', lw=2)
-ax1.set_title('Double Pendulum Animation')
+ax1.set_aspect('equal')
+ax1.grid()
+line1, = ax1.plot([], [], 'o-', lw=2, label='Pendulum 1')
+line2, = ax1.plot([], [], 'o-', lw=2, label='Pendulum 2')
+ax1.legend()
+ax1.set_title('Double Pendulum Simulation')
 
-# Set up the phase space plots
-ax2.set_xlim(min(angles1), max(angles1))
-ax2.set_ylim(min(angular_velocity1), max(angular_velocity1))
-ax2.set_xlabel('Angle 1 (rad)')
-ax2.set_ylabel('Angular Velocity 1 (rad/s)')
-phase_space1, = ax2.plot([], [], lw=1)
-ax2.set_title('Phase Space: Pendulum 1')
+# Set up the energy plot
+ax2.set_xlim(min(time1), max(time1))
+ax2.set_ylim(min(min(kinetic_energy1), min(potential_energy1), min(mechanical_energy1),
+                 min(kinetic_energy2), min(potential_energy2), min(mechanical_energy2)),
+             max(max(kinetic_energy1), max(potential_energy1), max(mechanical_energy1),
+                 max(kinetic_energy2), max(potential_energy2), max(mechanical_energy2)))
+ax2.set_xlabel('Time (s)')
+ax2.set_ylabel('Energy (J)')
+ax2.set_title('Energy of Double Pendulum')
+line_ke1, = ax2.plot([], [], 'r-', lw=2, label='Kinetic Energy 1')
+line_pe1, = ax2.plot([], [], 'b-', lw=2, label='Potential Energy 1')
+line_me1, = ax2.plot([], [], 'g-', lw=2, label='Mechanical Energy 1')
+line_ke2, = ax2.plot([], [], 'r--', lw=2, label='Kinetic Energy 2')
+line_pe2, = ax2.plot([], [], 'b--', lw=2, label='Potential Energy 2')
+line_me2, = ax2.plot([], [], 'g--', lw=2, label='Mechanical Energy 2')
+ax2.legend()
 
-ax3.set_xlim(min(angles2), max(angles2))
-ax3.set_ylim(min(angular_velocity2), max(angular_velocity2))
-ax3.set_xlabel('Angle 2 (rad)')
-ax3.set_ylabel('Angular Velocity 2 (rad/s)')
-phase_space2, = ax3.plot([], [], lw=1)
-ax3.set_title('Phase Space: Pendulum 2')
+# Set up the phase space plot for pendulum 1
+ax3.set_xlim(min(angles1_1), max(angles1_1))
+ax3.set_ylim(min(min(angular_velocity1_1), min(angular_velocity1_2)), max(max(angular_velocity1_1), max(angular_velocity1_2)))
+ax3.set_xlabel('Angle 1 (rad)')
+ax3.set_ylabel('Angular Velocity 1 (rad/s)')
+phase_space1_1, = ax3.plot([], [], 'r-', lw=1, label='Pendulum 1')
+phase_space1_2, = ax3.plot([], [], 'b-', lw=1, label='Pendulum 2')
+ax3.set_title('Phase Space: Pendulum 1')
+ax3.legend()
 
-# Set up the mechanical energy plot
-ax4.set_xlim(0, len(angles1) * 0.025)  # Assuming dt = 0.025
-ax4.set_ylim(min(mechanical_energies), max(mechanical_energies))
-ax4.set_xlabel('Time (s)')
-ax4.set_ylabel('Energy (J)')
-kinetic_line, = ax4.plot([], [], label='Kinetic Energy', lw=1)
-potential_line, = ax4.plot([], [], label='Potential Energy', lw=1)
-mechanical_line, = ax4.plot([], [], label='Mechanical Energy', lw=1)
+# Set up the phase space plot for pendulum 2
+ax4.set_xlim(min(angles2_1), max(angles2_1))
+ax4.set_ylim(min(min(angular_velocity2_1), min(angular_velocity2_2)), max(max(angular_velocity2_1), max(angular_velocity2_2)))
+ax4.set_xlabel('Angle 2 (rad)')
+ax4.set_ylabel('Angular Velocity 2 (rad/s)')
+phase_space2_1, = ax4.plot([], [], 'r-', lw=1, label='Pendulum 1')
+phase_space2_2, = ax4.plot([], [], 'b-', lw=1, label='Pendulum 2')
+ax4.set_title('Phase Space: Pendulum 2')
 ax4.legend()
-ax4.set_title('Energy vs Time')
 
 # Initialization function
 def init():
-    line.set_data([], [])
-    phase_space1.set_data([], [])
-    phase_space2.set_data([], [])
-    kinetic_line.set_data([], [])
-    potential_line.set_data([], [])
-    mechanical_line.set_data([], [])
-    return line, phase_space1, phase_space2, kinetic_line, potential_line, mechanical_line
+    line1.set_data([], [])
+    line2.set_data([], [])
+    line_ke1.set_data([], [])
+    line_pe1.set_data([], [])
+    line_me1.set_data([], [])
+    line_ke2.set_data([], [])
+    line_pe2.set_data([], [])
+    line_me2.set_data([], [])
+    phase_space1_1.set_data([], [])
+    phase_space1_2.set_data([], [])
+    phase_space2_1.set_data([], [])
+    phase_space2_2.set_data([], [])
+    return line1, line2, line_ke1, line_pe1, line_me1, line_ke2, line_pe2, line_me2, phase_space1_1, phase_space1_2, phase_space2_1, phase_space2_2
 
 # Animation function
-def animate(frame):
-    # thisx = [0, x1[frame], x2[frame]]
-    # thisy = [0, y1[frame], y2[frame]]
-    line.set_data([0, x1[frame], x2[frame]], [0, y1[frame], y2[frame]])
+def animate(i):
+    # Update first double pendulum
+    thisx1_1 = [0, x1_1[i], x2_1[i]]
+    thisy1_1 = [0, y1_1[i], y2_1[i]]
+    line1.set_data(thisx1_1, thisy1_1)
     
-    phase_space1.set_data(angles1[:frame], angular_velocity1[:frame])
-    phase_space2.set_data(angles2[:frame], angular_velocity2[:frame])
+    # Update second double pendulum
+    thisx1_2 = [0, x1_2[i], x2_2[i]]
+    thisy1_2 = [0, y1_2[i], y2_2[i]]
+    line2.set_data(thisx1_2, thisy1_2)
     
-    kinetic_line.set_data(np.arange(0, frame * 0.025, 0.025), kinetic_energies[:frame])
-    potential_line.set_data(np.arange(0, frame * 0.025, 0.025), potential_energies[:frame])
-    mechanical_line.set_data(np.arange(0, frame * 0.025, 0.025), mechanical_energies[:frame])
+    # Update energy plot
+    line_ke1.set_data(time1[:i], kinetic_energy1[:i])
+    line_pe1.set_data(time1[:i], potential_energy1[:i])
+    line_me1.set_data(time1[:i], mechanical_energy1[:i])
+    line_ke2.set_data(time2[:i], kinetic_energy2[:i])
+    line_pe2.set_data(time2[:i], potential_energy2[:i])
+    line_me2.set_data(time2[:i], mechanical_energy2[:i])
     
-    return line, phase_space1, phase_space2, kinetic_line, potential_line, mechanical_line
+    # Update phase space plots
+    phase_space1_1.set_data(angles1_1[:i], angular_velocity1_1[:i])
+    phase_space1_2.set_data(angles1_2[:i], angular_velocity1_2[:i])
+    phase_space2_1.set_data(angles2_1[:i], angular_velocity2_1[:i])
+    phase_space2_2.set_data(angles2_2[:i], angular_velocity2_2[:i])
+    
+    return line1, line2, line_ke1, line_pe1, line_me1, line_ke2, line_pe2, line_me2, phase_space1_1, phase_space1_2, phase_space2_1, phase_space2_2
 
 # Create the animation
-ani = animation.FuncAnimation(fig, animate, frames=len(angles1), init_func=init, blit=True, interval=10, repeat=True)
+ani = animation.FuncAnimation(fig, animate, frames=len(time1), init_func=init, blit=True, interval=10, repeat=True)
+
+# Save the animation as an MP4 file
+# writer = animation.FFMpegWriter(fps=60, metadata=dict(artist='Me'), bitrate=1800)
+# ani.save('double_pendulum_simulation_verfication.mp4', writer=writer)
 
 # Show the animation
 plt.tight_layout()
