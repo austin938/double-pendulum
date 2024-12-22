@@ -1,6 +1,7 @@
 import pickle
 import numpy as np
 import matplotlib.pyplot as plt
+from IO import yh
 
 
 # Load the pickle file
@@ -37,14 +38,14 @@ axs[3].set_xlim(-np.pi, np.pi)
 axs[3].set_ylim(min(omega1)-1, max(omega1)+1)
 
 # Plot the angles
-axs[0].plot(time, theta1, label='theta1')
-axs[0].plot(time, theta2, label='theta2')
+axs[0].plot(time, theta1, label=f'theta1={yh[0]}')
+axs[0].plot(time, theta2, label=f'theta2={yh[1]}')
 axs[0].legend(loc='best')
 axs[0].grid('True')
 
 # Plot the angular velocities
-axs[1].plot(time, omega1, label='omega1')
-axs[1].plot(time, omega2, label='omega2')
+axs[1].plot(time, omega1, label=f'omega1={yh[2]}')
+axs[1].plot(time, omega2, label=f'omega2={yh[3]}')
 axs[1].legend(loc='best')
 axs[1].grid('True')
 

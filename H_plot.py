@@ -15,43 +15,43 @@ momentum2 = data['momentum2']
 mechanical_energy = data['mechanical_energy']
 
 # Set up the figure and axis
-fig, axs = plt.subplots(4, 1, figsize=(10, 12))
+fig, axs = plt.subplots(2, 2, figsize=(12, 10))
 fig.suptitle('Double Pendulum Simulation (Hamiltonian Mechanics)')
-axs[0].set_title('Angles vs Time')
-axs[0].set_xlabel('Time (s)')
-axs[0].set_ylabel('Angle (radians)')
-axs[1].set_title('Momenta vs Time')
-axs[1].set_xlabel('Time (s)')
-axs[1].set_ylabel('Momentum (kg m^2/s)')
-axs[2].set_title('Energy vs Time')
-axs[2].set_xlabel('Time (s)')
-axs[2].set_ylabel('Energy (J)')
-axs[2].set_ylim(min(mechanical_energy), max(mechanical_energy))
-axs[3].set_title('Poincaré Section')
-axs[3].set_xlabel('Theta1 (radians)')
-axs[3].set_ylabel('Momentum1 (kg m^2/s)')
-axs[3].set_xlim(-np.pi, np.pi)
-axs[3].set_ylim(min(momentum1)-1, max(momentum1)+1)
+axs[0, 0].set_title('Angles vs Time')
+axs[0, 0].set_xlabel('Time (s)')
+axs[0, 0].set_ylabel('Angle (radians)')
+axs[0, 1].set_title('Momenta vs Time')
+axs[0, 1].set_xlabel('Time (s)')
+axs[0, 1].set_ylabel('Momentum (kg m^2/s)')
+axs[1, 0].set_title('Energy vs Time')
+axs[1, 0].set_xlabel('Time (s)')
+axs[1, 0].set_ylabel('Energy (J)')
+axs[1, 0].set_ylim(min(mechanical_energy), max(mechanical_energy))
+axs[1, 1].set_title('Poincaré Section')
+axs[1, 1].set_xlabel('Theta1 (radians)')
+axs[1, 1].set_ylabel('Momentum1 (kg m^2/s)')
+axs[1, 1].set_xlim(-1, 1)
+axs[1, 1].set_ylim(min(momentum1)-1, max(momentum1)+1)
 
 # Plot the angles
-axs[0].plot(time, theta1, label='theta1')
-axs[0].plot(time, theta2, label='theta2')
-axs[0].legend(loc='best')
-axs[0].grid(True)
+axs[0, 0].plot(time, theta1, label=f'theta1')
+axs[0, 0].plot(time, theta2, label=f'theta2')
+axs[0, 0].legend(loc='best')
+axs[0, 0].grid(True)
 
 # Plot the momenta
-axs[1].plot(time, momentum1, label='momentum1')
-axs[1].plot(time, momentum2, label='momentum2')
-axs[1].legend(loc='best')
-axs[1].grid(True)
+axs[0, 1].plot(time, momentum1, label=f'momentum1')
+axs[0, 1].plot(time, momentum2, label=f'momentum2')
+axs[0, 1].legend(loc='best')
+axs[0, 1].grid(True)
 
 # Plot the energies
-axs[2].plot(time, mechanical_energy, label='Mechanical Energy')
-axs[2].legend(loc='best')
-axs[2].grid(True)
+axs[1, 0].plot(time, mechanical_energy, label='Mechanical Energy')
+axs[1, 0].legend(loc='best')
+axs[1, 0].grid(True)
 
 # Extract Poincaré section data at fixed time intervals
-interval = 0.1  # Fixed time interval
+interval = 0.005  # Fixed time interval
 poincare_theta1 = []
 poincare_momentum1 = []
 
@@ -61,13 +61,13 @@ for i in range(1, len(time)):
         poincare_momentum1.append(momentum1[i])
 
 # Plot the Poincaré section
-axs[3].plot(poincare_theta1, poincare_momentum1, 'o', label='Poincaré Section')
-axs[3].legend(loc='best')
-axs[3].grid(True)
+axs[1, 1].plot(poincare_theta1, poincare_momentum1, 'o', label='Poincaré Section')
+axs[1, 1].legend(loc='best')
+axs[1, 1].grid(True)
 
 # Save the figure
-fig.savefig('Hamiltonian_dp_simulation.png')
-print("Figure saved as Hamiltonian_dp_simulation.png")
+# fig.savefig('Hamiltonian_dp_simulation.png')
+# print("Figure saved as Hamiltonian_dp_simulation.png")
 
 # Show the figure
 plt.tight_layout()
