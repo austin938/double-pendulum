@@ -1,25 +1,28 @@
 from scipy.integrate import solve_ivp
 
-def rk4(func, y: list, t, dt):
+
+def solver(func, y: list, t_span, t_eval, method):
     '''
     Parameters:
     ------------
-    y: initial state
+    y : list
+        The state vector of the system. It contains:
+            y[0] : float
+                Angle of the first pendulum (theta1).
+            y[1] : float
+                Angle of the second pendulum (theta2).
+            y[2] : float
+                Angular velocity or generalized momentum of the first pendulum (omega1 or p1).
+            y[3] : float
+                Angular velocity or generalized momentum of the second pendulum (omega2 or p2).    
+    method : str
+        The ODE solver to use. It can be 'RK45' or 'DOP853'.
+    
     '''
-    k1 = func(y, t)
-    k2 = func(y + k1 * dt * 0.5, t + 0.5 * dt)
-    k3 = func(y + k2 * dt * 0.5, t + dt * 0.5)
-    k4 = func(y + dt * k3, t + dt)
-    ynext = y + dt / 6 * (k1 + 2 * k2 + 2 * k3 + k4)
-    return ynext
-
-
-def rk45(func, y: list, t_span, t_eval):
-    '''
-    Parameters:
-    ------------
-    y: initial state
-    '''
-    sol = solve_ivp(func, t_span, y, method='RK45', t_eval=t_eval)
+    if method == 'RK45':
+        sol = solve_ivp(func, t_span, y, method='RK45', t_eval=t_eval)
+    elif method == 'DOP853':
+        sol = solve_ivp(func, t_span, y, method='DOP853', t_eval=t_eval)
+    else:
+        raise SystemExit("Error: method "+method+" is not supported!")
     return sol
-
